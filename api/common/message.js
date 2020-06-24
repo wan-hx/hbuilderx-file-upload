@@ -1,5 +1,5 @@
-let hx = require('hbuilderx');
-let path = require('path');
+const hx = require('hbuilderx');
+const path = require('path');
 
 /**
  * @description 消息

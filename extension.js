@@ -34,10 +34,9 @@ function activate(context) {
     let ApiClipboard = hx.commands.registerCommand('extension.ApiClipboard', ()=> {
         Main.handleClipboard()
     });
-    // 打开配置
+    // 打开编辑配置
     let OpenConfig = hx.commands.registerCommand('extension.OpenConfig', () => {
-        let url = path.join(__dirname, 'config', 'server.js');
-        hx.workspace.openTextDocument(url);
+        Main.editConfig()
     });
     // 加密
     let OpenCompound = hx.commands.registerCommand('extension.OpenCompound', () => {

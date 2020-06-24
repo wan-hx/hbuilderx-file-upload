@@ -1,6 +1,6 @@
-var hx = require('hbuilderx');
-var fs = require('fs');
-var path = require('path');
+const hx = require('hbuilderx');
+const fs = require('fs');
+const path = require('path');
 
 
 /**

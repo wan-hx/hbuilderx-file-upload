@@ -1,11 +1,10 @@
-var fs = require('fs');
-var path = require('path');
-var os = require('os');
-var qiniu = require('qiniu');
-var hx = require('hbuilderx');
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+const hx = require('hbuilderx');
 
 // 获取操作系统版本
-var platform = os.platform();
+const platform = os.platform();
 
 /**
  * @description 获取markdown图片本地地址

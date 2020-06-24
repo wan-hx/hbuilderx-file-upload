@@ -1,5 +1,5 @@
-let fs = require('fs');
-let hx = require('hbuilderx');
+const fs = require('fs');
+const hx = require('hbuilderx');
 
 /**
  * @description 在窗口中间弹出一个可搜索的建议选择列表

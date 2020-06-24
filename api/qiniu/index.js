@@ -1,14 +1,14 @@
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var qiniu = require('qiniu');
-var hx = require('hbuilderx');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const qiniu = require('qiniu');
+const hx = require('hbuilderx');
 
-let mix = require('../mix/mix.js');
-let Msg = require('../common/message.js');
+const mix = require('../mix/mix.js');
+const Msg = require('../common/message.js');
 
 // 获取操作系统版本
-var platform = os.platform();
+const platform = os.platform();
 
 
 /**

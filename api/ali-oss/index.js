@@ -1,15 +1,15 @@
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var OSS = require('ali-oss');
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+const OSS = require('ali-oss');
 
-var hx = require('hbuilderx');
+const hx = require('hbuilderx');
 
-let mix = require('../mix/mix.js');
-let Msg = require('../common/message.js');
+const mix = require('../mix/mix.js');
+const Msg = require('../common/message.js');
 
 // 获取操作系统版本
-var platform = os.platform();
+const platform = os.platform();
 
 
 /**

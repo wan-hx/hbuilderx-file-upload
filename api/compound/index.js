@@ -1,8 +1,8 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var hx = require('hbuilderx');
-var mix = require('../mix/mix.js');
+const hx = require('hbuilderx');
+const mix = require('../mix/mix.js');
 
 function compound() {
     let activeEditor = hx.window.getActiveTextEditor();

@@ -1,16 +1,16 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var hx = require('hbuilderx');
+const hx = require('hbuilderx');
 
-var tcb = require('./tcb-cos/index.js');
-var ali = require('./ali-oss/index.js');
-var qiniu = require('./qiniu/index.js');
+const tcb = require('./tcb-cos/index.js');
+const ali = require('./ali-oss/index.js');
+const qiniu = require('./qiniu/index.js');
 
-var markdown = require('./markdown/index.js');
-var clipboard = require('./clipboard/index.js');
+const markdown = require('./markdown/index.js');
+const clipboard = require('./clipboard/index.js');
 
-var common = require('./common/common.js');
+const common = require('./common/common.js');
 const ServerConfig = require('../config/server.js');
 
 
@@ -247,8 +247,19 @@ function handleClipboard() {
 };
 
 
+/**
+ * @description 打开配置
+ */
+function editConfig() {
+    let dirname = __dirname
+    let pluginDir = dirname.substr(0, dirname.length - 3);
+    let url = path.join(pluginDir, 'config', 'server.js');
+    hx.workspace.openTextDocument(url);
+};
+
 module.exports = {
     Main,
+    editConfig,
     handleClipboard,
     handleMarkDown
 }
