@@ -7,7 +7,6 @@ var hx = require('hbuilderx');
 
 let mix = require('../mix/mix.js');
 let Msg = require('../common/message.js');
-let ServerConfig = require('../../config/server.js').tcb;
 
 // 获取操作系统版本
 var platform = os.platform();
@@ -19,7 +18,7 @@ var platform = os.platform();
  * @param {String} LocalFilePath 本地文件绝对路径
  * @param {String} ServerFilePath 云服务文件路径
  */
-function Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType}) {
+function Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType,ServerConfig}) {
     return new Promise(function(resolve, reject) {
         cos.putObject({
             Bucket: Bucket,
@@ -59,11 +58,11 @@ function Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType}) {
 /**
  * @description 上传
  */
-async function TcbUpload(info) {
+async function TcbUpload(info,ServerConfig) {
     // 本地文件绝对路径
     let LocalFilePath = info['fspath'];
     let ActionType = info['type'];
-    
+
     // 云服务器文件信息及路径
     let ServerName = info['ServerFileName'];
     let ServerFilePath = path.join(ServerConfig.Path, ServerName);
@@ -94,7 +93,7 @@ async function TcbUpload(info) {
     });
 
     // 上传
-    let url = await Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType})
+    let url = await Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType,ServerConfig})
     return url;
 };
 

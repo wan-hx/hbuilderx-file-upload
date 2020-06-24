@@ -6,7 +6,6 @@ var hx = require('hbuilderx');
 
 let mix = require('../mix/mix.js');
 let Msg = require('../common/message.js');
-let ServerConfig = require('../../config/server.js').qiniu;
 
 // 获取操作系统版本
 var platform = os.platform();
@@ -17,7 +16,7 @@ var platform = os.platform();
  * @param {String} key 上传到七牛后保存的文件名
  * @return {String} token 返回七牛上传时用到Token
  */
-function getSkAk() {
+function getSkAk(ServerConfig) {
     let secretKey = ServerConfig.secretKey;
     let accessKey = ServerConfig.accessKey;
     if (ServerConfig.isEncrypt) {
@@ -51,25 +50,30 @@ const uptoken = (bucket, key) => {
 /**
  *@description 上传
  */
-function Upload({formUploader,token,extra,ServerFilePath,LocalFilePath,ActionType}) {
+function Upload({formUploader,token,extra,ServerFilePath,LocalFilePath,ActionType,ServerConfig}) {
     return new Promise(function(resolve, reject) {
         formUploader.putFile(token, ServerFilePath, LocalFilePath, extra, function(err, ret) {
             if (err) {
                 Msg.MessageNotification('serverError', '七牛云', err);
-                reject(err);
+                reject({'status': false,'data':err});
             }
-            let url = '';
             if ("key" in ret) {
-                url = ret.key;
+                let url = ret.key;
                 if (ServerConfig.DomainName) {
                     url = ServerConfig.DomainName + "/" + ret.key;
                 }
-                // 拷贝url到剪切板、并弹窗
-                hx.env.clipboard.writeText(url);
-                Msg.MessageNotification('uploadSuccess', '七牛云', '', ActionType);
 
-                resolve(url);
+                if (ActionType == 'dir') {
+                    resolve({'status': true,'data':url});
+                } else {
+                    hx.env.clipboard.writeText(url);
+                    Msg.MessageNotification('uploadSuccess', '七牛云', '', ActionType);
+                    resolve(url);
+                }
             } else {
+                if (ActionType == 'dir') {
+                   reject({'status': false,'data':ret.error});
+                }
                 Msg.MessageNotification('serverError', '七牛云', ret.error);
             }
         });
@@ -80,7 +84,7 @@ function Upload({formUploader,token,extra,ServerFilePath,LocalFilePath,ActionTyp
  * @description  构建上传方法
  * @param {Object} info
  */
-async function QiniuUpload(info) {
+async function QiniuUpload(info,ServerConfig) {
     // 本地文件绝对路径
     let LocalFilePath = info['fspath'];
     let ActionType = info['type'];
@@ -96,7 +100,7 @@ async function QiniuUpload(info) {
     }
 
     // Access Key 和 Secret Key
-    let skak = getSkAk();
+    let skak = getSkAk(ServerConfig);
     qiniu.conf.ACCESS_KEY = skak.accessKey;
     qiniu.conf.SECRET_KEY = skak.secretKey;
     let config = new qiniu.conf.Config();
@@ -114,7 +118,8 @@ async function QiniuUpload(info) {
         extra,
         ServerFilePath,
         LocalFilePath,
-        ActionType
+        ActionType,
+        ServerConfig
     });
     return url;
 }

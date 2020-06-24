@@ -20,12 +20,14 @@ function selectServer() {
         placeHolder: "请选择要上传的云服务器..."
     });
 
-    return PickResult.then(function(result) {
-        if (!result) {
-            return;
-        }
-        return result.code;
-    });
+    return new Promise(function(resolve, reject) {
+        PickResult.then(function(result) {
+            if (!result) {
+                reject()
+            }
+            resolve(result.code);
+        });
+    })
 }
 
 /**

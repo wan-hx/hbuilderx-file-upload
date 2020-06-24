@@ -59,8 +59,9 @@ function LineReplace(start, end, text) {
 /**
  * @description 获取当前行内容
  * @param {Function} fn 上传函数
+ * @param {Object} ServerConfig
  */
-function MarkDownImgReplace(fn) {
+function MarkDownImgReplace(fn,ServerConfig) {
     let activeEditor = hx.window.getActiveTextEditor();
     activeEditor.then(function(editor) {
         let fsName = editor.document.fileName;
@@ -102,7 +103,7 @@ function MarkDownImgReplace(fn) {
                 "ServerFileName": ServerName
             }
             async function handle() {
-                var server_url = await fn(ServerReq);
+                var server_url = await fn(ServerReq,ServerConfig);
                 console.log("云服务器返回的URL:", server_url);
                 if (server_url && server_url != undefined) {
                     let waitWriteText = LineText.replace(rawImgUrl, server_url);

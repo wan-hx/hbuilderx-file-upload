@@ -30,6 +30,7 @@ function getServerName(config, filepath) {
     return ServerFileName
 };
 
+
 /**
  * @description 预处理文件信息
  * @param {Object} config 云服务器配置
@@ -97,13 +98,71 @@ function PreProcessing(config, info, ActionType) {
     }
     // 目录
     if (stats.isDirectory()) {
-        // let lists = common.walkSync(fsPath)
-        hx.window.showInformationMessage("暂不支持按目录上传。")
+        let lists = common.walkSync(fsPath);
         return {
             'type': 'dir',
-            'lists': 'lists'
+            'dirName':fsPath,
+            'fileLists': lists
         }
     }
+};
+
+
+/**
+ * @description 上传目录
+ * @param {Object} ServerType 七牛云 | 阿里云 | 腾讯云
+ * @param {Object} config 服务器配置信息
+ * @param {Object} Info 文件数据
+ */
+function UploadDirs(ServerType,config, info) {
+    // 上传信息
+    let fileLists = info.fileLists;
+    let filesNum = info.fileLists.length;
+    let dirName = info.dirName;
+
+    // 控制台名称
+    let channel_name = ServerType;
+    let outputChannel = hx.window.createOutputChannel(channel_name);
+    outputChannel.show();
+
+    let hint = '【注意】当文件数量很多时，上传需要较长时间，请耐心等待。'
+    let first_msg = dirName + '下，共有 ' + filesNum + ' 个文件。';
+    outputChannel.appendLine(hint)
+    outputChannel.appendLine(first_msg);
+
+    if (filesNum == 0) {
+        return;
+    }
+
+    let fn = ServerType == 'aliyun'
+        ? ali.AliUpload : ServerType == 'qiniu' ? qiniu.QiniuUpload : tcb.TcbUpload
+
+    async function handle(fspath,req) {
+        let res = await fn(req,config);
+
+        let basename = path.basename(fspath);
+        if (basename.length < 28) {
+            let showPoint = (str, num) => str.repeat(num);
+            basename = basename + showPoint('.',28-basename.length);
+        }
+        // 控制台打印消息
+        let upload_msg = ''
+        if (res.status) {
+            upload_msg = basename + ' [成功] URL: ' + res.data;
+        } else {
+            upload_msg = basename + ' [失败] 错误: ' + res.data;
+        }
+        outputChannel.appendLine(upload_msg);
+    }
+    for (let fspath of fileLists) {
+        let req = {
+            'type': 'dir',
+            'fspath': fspath,
+            'ServerFileName': ''
+        }
+        req["ServerFileName"] = getServerName(config,fspath);
+        handle(fspath,req);
+    };
 };
 
 
@@ -116,25 +175,28 @@ function Main(LocalFileInfo, ServerType) {
     // HBuilderX文件预处理
     let config = ServerConfig[ServerType]
     let info = PreProcessing(config, LocalFileInfo, 'default');
-    console.log("待上传信息", info);
 
-    // 目录、错误
-    if (info['type'] == 'dir' || info['type'] == 'error') {
-        return;
-    }
+    // 错误
+    if (info['type'] == 'error') {return;}
 
     // 项目管理器上传文件
     if (info['type'] == 'file') {
         if (ServerType == 'aliyun') {
-            ali.AliUpload(info)
+            ali.AliUpload(info,config);
         } else if (ServerType == 'tcb') {
-            tcb.TcbUpload(info)
+            tcb.TcbUpload(info,config);
         } else if (ServerType == 'qiniu') {
-            qiniu.QiniuUpload(info)
+            qiniu.QiniuUpload(info,config);
         }
         return;
+    };
+
+    // 上传目录
+    if (info['type'] == 'dir') {
+        UploadDirs(ServerType,config,info);
     }
 };
+
 
 /**
  * @description 操作MarkDown内替换所在行图片
@@ -144,15 +206,16 @@ function handleMarkDown(LocalFileInfo, ServerType) {
     let info = PreProcessing(config, LocalFileInfo, 'md');
     if (info['type'] == 'markdown') {
         if (ServerType == 'aliyun') {
-            markdown.MarkDownImgReplace(ali.AliUpload);
+            markdown.MarkDownImgReplace(ali.AliUpload,config);
         } else if (ServerType == 'tcb') {
-            markdown.MarkDownImgReplace(tcb.TcbUpload);
+            markdown.MarkDownImgReplace(tcb.TcbUpload,config);
         } else if (ServerType == 'qiniu') {
-            markdown.MarkDownImgReplace(qiniu.QiniuUpload);
+            markdown.MarkDownImgReplace(qiniu.QiniuUpload,config);
         }
         return;
     }
-}
+};
+
 
 /**
  *@description 操作剪切板
@@ -160,9 +223,8 @@ function handleMarkDown(LocalFileInfo, ServerType) {
 function handleClipboard() {
     async function handle() {
         let LocalPath = await clipboard.getClipboard();
-        if (!LocalPath) {
-            return;
-        }
+        if (!LocalPath) {return;};
+
         let serverCode = await clipboard.selectServer();
         let req = {
             'type': 'file',
@@ -171,17 +233,17 @@ function handleClipboard() {
         }
         switch (serverCode) {
             case 'qiniu':
-                qiniu.QiniuUpload(req);
+                qiniu.QiniuUpload(req,ServerConfig.qiniu);
                 break;
             case 'tcb':
-                tcb.TcbUpload(req);
+                tcb.TcbUpload(req,ServerConfig.tcb);
                 break;
             case 'aliyun':
-                ali.AliUpload(req);
+                ali.AliUpload(req,ServerConfig.aliyun);
                 break;
         }
-    }
-    handle();
+    };
+    handle()
 };
 
 
