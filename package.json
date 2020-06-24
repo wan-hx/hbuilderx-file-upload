@@ -1,0 +1,268 @@
+{
+    "name": "file-upload",
+    "description": "一键上传文件, 支持阿里云oss、腾讯云cos、七牛云等",
+    "displayName": "一键上传文件",
+    "version": "0.0.1",
+    "publisher": "OneOne",
+    "engines": {
+        "HBuilderX": "^2.7.9"
+    },
+    "categories": [
+        "Other"
+    ],
+    "main": "./extension",
+    "activationEvents": [
+        "onCommand:extension.OpenConfig",
+        "onCommand:extension.OpenCompound",
+        "onCommand:extension.ApiAli",
+        "onCommand:extension.ApiAliMdImg",
+        "onCommand:extension.ApiTcb",
+        "onCommand:extension.ApiTcbMdImg",
+        "onCommand:extension.ApiQiniu",
+        "onCommand:extension.ApiQiniuMdImg",
+        "onCommand:extension.ApiClipboard"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "file-upload",
+            "properties": {
+                "imageUploadMenu.tcb": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "菜单是否显示：腾讯云cos"
+                },
+                "imageUploadMenu.aliyun": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "菜单是否显示：阿里云oss"
+                },
+                "imageUploadMenu.qiniu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "菜单是否显示:七牛云"
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "extension.ApiQiniu",
+                "title": "七牛云"
+            },
+            {
+                "command": "extension.ApiQiniuMdImg",
+                "title": "七牛云: markdown"
+            },
+            {
+                "command": "extension.ApiTcb",
+                "title": "腾讯云cos"
+            },
+            {
+                "command": "extension.ApiTcbMdImg",
+                "title": "腾讯云cos: markdown"
+            },
+            {
+                "command": "extension.ApiAli",
+                "title": "阿里云oss"
+            },
+            {
+                "command": "extension.ApiAliMdImg",
+                "title": "阿里云oss: markdown"
+            },
+            {
+                "command": "extension.ApiClipboard",
+                "title": "上传剪贴板中的本地文件"
+            },
+            {
+                "command": "extension.OpenConfig",
+                "title": "编辑云服务器配置"
+            },
+            {
+                "command": "extension.OpenCompound",
+                "title": "账号加密"
+            }
+        ],
+        "menus": {
+            "menubar/tool": [
+                {
+                    "title": "一键上传",
+                    "group": "ext_settings",
+                    "id": "toolsMenu"
+                },
+                {
+                    "command": "extension.ApiQiniu",
+                    "title": "七牛云",
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "command": "extension.ApiTcb",
+                    "title": "腾讯云cos",
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "command": "extension.ApiAli",
+                    "title": "阿里云oss",
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "command": "extension.ApiClipboard",
+                    "title": "上传剪贴板中的本地文件",
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "group": "toolsMenu@1"
+                },
+                {
+                    "command": "extension.OpenConfig",
+                    "title": "编辑云服务器配置",
+                    "group": "toolsMenu@2"
+                },
+                {
+                    "group": "ext_settings"
+                }
+            ],
+            "editor/context": [
+                {
+                    "title": "一键上传",
+                    "group": "copy",
+                    "id": "imgs"
+                },
+                {
+                    "command": "extension.ApiQiniu",
+                    "title": "七牛云",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.qiniu"
+                },
+                {
+                    "command": "extension.ApiQiniuMdImg",
+                    "title": "七牛云 - 上传Markdown内图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
+                },
+                {
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
+                },
+                {
+                    "command": "extension.ApiTcb",
+                    "title": "腾讯云",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.tcb"
+                },
+                {
+                    "command": "extension.ApiTcbMdImg",
+                    "title": "腾讯云 - 上传Markdown内图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
+                },
+                {
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
+                },
+                {
+                    "command": "extension.ApiAli",
+                    "title": "阿里云",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.aliyun"
+                },
+                {
+                    "command": "extension.ApiAliMdImg",
+                    "title": "阿里云 - 上传Markdown内图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.aliyun && langId == 'markdown'"
+                },
+                {
+                    "group": "imgs@1"
+                },
+                {
+                    "command": "extension.ApiClipboard",
+                    "title": "上传剪贴板中的本地文件",
+                    "group": "imgs@2"
+                },
+                {
+                    "group": "imgs@2"
+                },
+                {
+                    "command": "extension.OpenCompound",
+                    "title": "账号加密",
+                    "group": "imgs@3",
+                    "when": "!activeEditor.file.isProjectFile && langId == 'javascript'"
+                },
+                {
+                    "group": "imgs@3"
+                },
+                {
+                    "command": "extension.OpenConfig",
+                    "title": "编辑云服务器配置",
+                    "group": "imgs@4"
+                },
+                {
+                    "group": "z_commands"
+                },
+                {
+                    "group": "copy"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "title": "一键上传",
+                    "group": "openInExplorer",
+                    "id": "imgs"
+                },
+                {
+                    "group": "openInExplorer"
+                },
+                {
+                    "command": "extension.ApiQiniu",
+                    "title": "七牛云",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.qiniu"
+                },
+                {
+                    "command": "extension.ApiTcb",
+                    "title": "腾讯云cos",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.tcb"
+                },
+                {
+                    "command": "extension.ApiAli",
+                    "title": "阿里云oss",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.aliyun"
+                },
+                {
+                    "group": "imgs@1"
+                },
+                {
+                    "command": "extension.ApiClipboard",
+                    "title": "上传剪贴板中的本地文件",
+                    "group": "imgs@2"
+                },
+                {
+                    "group": "imgs@2"
+                },
+                {
+                    "command": "extension.OpenConfig",
+                    "title": "编辑云服务器配置",
+                    "group": "imgs@3"
+                },
+                {
+                    "group": "z_commands"
+                }
+            ]
+        }
+    },
+    "extensionDependencies": [
+        "plugin-manager"
+    ],
+    "dependencies": {
+        "ali-oss": "^6.9.1",
+        "cos-nodejs-sdk-v5": "^2.6.1",
+        "install": "^0.13.0",
+        "node-machine-id": "^1.1.12",
+        "npm": "^6.14.5",
+        "qiniu": "^7.3.1"
+    }
+}
