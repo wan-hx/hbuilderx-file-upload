@@ -3,3 +3,4 @@ node_modules/*
 
 api/mix/huid.source.js
 api/mix/mix.source.js
+config/server.js
