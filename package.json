@@ -1,5 +1,5 @@
 {
-    "name": "file-upload",
+    "name": "hbuilderx-file-upload",
     "description": "一键上传文件, 支持阿里云oss、腾讯云cos、七牛云等",
     "displayName": "一键上传文件",
     "version": "0.0.1",
@@ -27,7 +27,7 @@
     ],
     "contributes": {
         "configuration": {
-            "title": "file-upload",
+            "title": "hbuilderx-file-upload",
             "properties": {
                 "imageUploadMenu.tcb": {
                     "type": "boolean",
@@ -146,19 +146,19 @@
                 },
                 {
                     "command": "extension.ApiQiniu",
-                    "title": "七牛云",
+                    "title": "七牛云 - 当前文件",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.qiniu"
                 },
                 {
                     "command": "extension.ApiQiniuMdImg",
-                    "title": "七牛云 - Markdown - 上传当前行图片",
+                    "title": "七牛云 - md - 当前行图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
                 },
                 {
                     "command": "extension.ApiQiniuMdImgAll",
-                    "title": "七牛云 - Markdown - 上传所有图片",
+                    "title": "七牛云 - md - 所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
                 },
@@ -168,19 +168,19 @@
                 },
                 {
                     "command": "extension.ApiTcb",
-                    "title": "腾讯云",
+                    "title": "腾讯云 - 当前文件",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.tcb"
                 },
                 {
                     "command": "extension.ApiTcbMdImg",
-                    "title": "腾讯云 - Markdown - 上传当前行图片",
+                    "title": "腾讯云 - md - 当前行图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
                 },
                 {
                     "command": "extension.ApiTcbMdImgAll",
-                    "title": "腾讯云 - Markdown - 上传所有图片",
+                    "title": "腾讯云 - md - 所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
                 },
@@ -190,19 +190,19 @@
                 },
                 {
                     "command": "extension.ApiAli",
-                    "title": "阿里云",
+                    "title": "阿里云 - 当前文件",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.aliyun"
                 },
                 {
                     "command": "extension.ApiAliMdImg",
-                    "title": "阿里云 - Markdown - 上传当前行图片",
+                    "title": "阿里云 - md - 当前行图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.aliyun && langId == 'markdown'"
                 },
                 {
                     "command": "extension.ApiAliMdImgAll",
-                    "title": "阿里云 - Markdown - 上传所有图片",
+                    "title": "阿里云 - md - 所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.aliyun && langId == 'markdown'"
                 },
