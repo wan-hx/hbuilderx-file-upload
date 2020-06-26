@@ -16,10 +16,13 @@
         "onCommand:extension.OpenCompound",
         "onCommand:extension.ApiAli",
         "onCommand:extension.ApiAliMdImg",
+        "onCommand:extension.ApiAliMdImgAll",
         "onCommand:extension.ApiTcb",
         "onCommand:extension.ApiTcbMdImg",
+        "onCommand:extension.ApiTcbMdImgAll",
         "onCommand:extension.ApiQiniu",
         "onCommand:extension.ApiQiniuMdImg",
+        "onCommand:extension.ApiQiniuMdImgAll",
         "onCommand:extension.ApiClipboard"
     ],
     "contributes": {
@@ -53,6 +56,10 @@
                 "title": "七牛云: markdown"
             },
             {
+                "command": "extension.ApiQiniuMdImgAll",
+                "title": "七牛云: markdownAll"
+            },
+            {
                 "command": "extension.ApiTcb",
                 "title": "腾讯云cos"
             },
@@ -61,12 +68,20 @@
                 "title": "腾讯云cos: markdown"
             },
             {
+                "command": "extension.ApiTcbMdImgAll",
+                "title": "腾讯云cos: markdownAll"
+            },
+            {
                 "command": "extension.ApiAli",
                 "title": "阿里云oss"
             },
             {
                 "command": "extension.ApiAliMdImg",
                 "title": "阿里云oss: markdown"
+            },
+            {
+                "command": "extension.ApiAliMdImgAll",
+                "title": "阿里云oss: markdownAll"
             },
             {
                 "command": "extension.ApiClipboard",
@@ -137,7 +152,13 @@
                 },
                 {
                     "command": "extension.ApiQiniuMdImg",
-                    "title": "七牛云 - 上传Markdown内图片",
+                    "title": "七牛云 - Markdown - 上传当前行图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
+                },
+                {
+                    "command": "extension.ApiQiniuMdImgAll",
+                    "title": "七牛云 - Markdown - 上传所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.qiniu && langId == 'markdown'"
                 },
@@ -153,7 +174,13 @@
                 },
                 {
                     "command": "extension.ApiTcbMdImg",
-                    "title": "腾讯云 - 上传Markdown内图片",
+                    "title": "腾讯云 - Markdown - 上传当前行图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
+                },
+                {
+                    "command": "extension.ApiTcbMdImgAll",
+                    "title": "腾讯云 - Markdown - 上传所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.tcb && langId == 'markdown'"
                 },
@@ -169,7 +196,13 @@
                 },
                 {
                     "command": "extension.ApiAliMdImg",
-                    "title": "阿里云 - 上传Markdown内图片",
+                    "title": "阿里云 - Markdown - 上传当前行图片",
+                    "group": "imgs@1",
+                    "when": "config.imageUploadMenu.aliyun && langId == 'markdown'"
+                },
+                {
+                    "command": "extension.ApiAliMdImgAll",
+                    "title": "阿里云 - Markdown - 上传所有图片",
                     "group": "imgs@1",
                     "when": "config.imageUploadMenu.aliyun && langId == 'markdown'"
                 },

@@ -4,34 +4,45 @@ var hx = require('hbuilderx');
 var Main = require('./api/main.js');
 var compound = require('./api/compound/index.js');
 
-
 function activate(context) {
     // 腾讯云
     let ApiTcb = hx.commands.registerCommand('extension.ApiTcb', (param) => {
-        Main.Main(param,'tcb', 'default')
+        Main.Main(param, 'tcb', 'default')
     });
-    // 腾讯云：md内上传当前行图片
+    // 腾讯云：上传当前行图片 (markdown)
     let ApiTcbMdImg = hx.commands.registerCommand('extension.ApiTcbMdImg', (param) => {
-        Main.handleMarkDown(param,'tcb')
+        Main.MarkDownForLine(param, 'tcb')
+    });
+    // 腾讯云：上传所有图片 (markdown)
+    let ApiTcbMdImgAll = hx.commands.registerCommand('extension.ApiTcbMdImgAll', (param) => {
+        Main.MarkDownForAll('tcb')
     });
     // 阿里云
     let ApiAli = hx.commands.registerCommand('extension.ApiAli', (param) => {
-        Main.Main(param,'aliyun', 'default')
+        Main.Main(param, 'aliyun', 'default')
     });
-    // 阿里云：md内上传当前行图片
+    // 阿里云：上传当前行图片 (markdown)
     let ApiAliMdImg = hx.commands.registerCommand('extension.ApiAliMdImg', (param) => {
-        Main.handleMarkDown(param,'aliyun')
+        Main.MarkDownForLine(param, 'aliyun')
+    });
+    // 阿里云：上传所有图片 (markdown)
+    let ApiAliMdImgAll = hx.commands.registerCommand('extension.ApiAliMdImgAll', () => {
+        Main.MarkDownForAll('aliyun');
     });
     // 七牛云
     let ApiQiniu = hx.commands.registerCommand('extension.ApiQiniu', (param) => {
-        Main.Main(param,'qiniu', 'default')
+        Main.Main(param, 'qiniu', 'default')
     });
-    // 七牛云：md内上传当前行图片
+    // 七牛云：上传当前行图片 (markdown)
     let ApiQiniuMdImg = hx.commands.registerCommand('extension.ApiQiniuMdImg', (param) => {
-        Main.handleMarkDown(param,'qiniu')
+        Main.MarkDownForLine(param, 'qiniu')
+    });
+    // 七牛云：上传所有图片 (markdown)
+    let ApiQiniuMdImgAll = hx.commands.registerCommand('extension.ApiQiniuMdImgAll', () => {
+        Main.MarkDownForAll('qiniu');
     });
     // 剪贴板
-    let ApiClipboard = hx.commands.registerCommand('extension.ApiClipboard', ()=> {
+    let ApiClipboard = hx.commands.registerCommand('extension.ApiClipboard', () => {
         Main.handleClipboard()
     });
     // 打开编辑配置

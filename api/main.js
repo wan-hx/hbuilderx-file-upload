@@ -201,18 +201,36 @@ function Main(LocalFileInfo, ServerType) {
 /**
  * @description 操作MarkDown内替换所在行图片
  */
-function handleMarkDown(LocalFileInfo, ServerType) {
+function MarkDownForLine(LocalFileInfo, ServerType) {
     let config = ServerConfig[ServerType]
     let info = PreProcessing(config, LocalFileInfo, 'md');
     if (info['type'] == 'markdown') {
         if (ServerType == 'aliyun') {
-            markdown.MarkDownImgReplace(ali.AliUpload,config);
+            markdown.MarkDownLineImgReplace(ali.AliUpload,config);
         } else if (ServerType == 'tcb') {
-            markdown.MarkDownImgReplace(tcb.TcbUpload,config);
+            markdown.MarkDownLineImgReplace(tcb.TcbUpload,config);
         } else if (ServerType == 'qiniu') {
-            markdown.MarkDownImgReplace(qiniu.QiniuUpload,config);
+            markdown.MarkDownLineImgReplace(qiniu.QiniuUpload,config);
         }
         return;
+    }
+};
+
+
+/**
+ * @description 上传MarkDown文件内所有图片
+ */
+function MarkDownForAll(serverCode) {
+    switch (serverCode) {
+        case 'qiniu':
+            markdown.MarkDownAll(qiniu.QiniuUpload,ServerConfig.qiniu)
+            break;
+        case 'tcb':
+            markdown.MarkDownAll(tcb.TcbUpload,ServerConfig.tcb);
+            break;
+        case 'aliyun':
+            markdown.MarkDownAll(ali.AliUpload,ServerConfig.aliyun);
+            break;
     }
 };
 
@@ -261,5 +279,6 @@ module.exports = {
     Main,
     editConfig,
     handleClipboard,
-    handleMarkDown
+    MarkDownForLine,
+    MarkDownForAll
 }

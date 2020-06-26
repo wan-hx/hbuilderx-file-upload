@@ -1,10 +1,42 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 const hx = require('hbuilderx');
 
 // 获取操作系统版本
 const platform = os.platform();
+
+
+/**
+ * @description 读取MarkDown文件内容
+ * @param {Object} fspath 文件路径
+ */
+function getMarkDownFileContent(fspath, callback) {
+    var result = [];
+    const rl = readline.createInterface({
+        input: fs.createReadStream(fspath)
+    });
+    rl.on('line', (line) => {
+        result.push(line);
+    });
+    rl.on('close', () => {
+        callback(result)
+    });
+};
+
+
+/**
+ * @description 将内容写入markdown
+ * @param {Object} fspath 文件路径
+ */
+function WriteMarkDown(fspath, fileContent) {
+    var file = fs.createWriteStream(fspath)
+    fileContent.forEach(function(v) {
+        file.write(v + '\n');
+    });
+};
+
 
 /**
  * @description 获取markdown图片本地地址
@@ -35,6 +67,7 @@ function getMarkDownImgLocalPath(rawImgInfo, MdPath, MdName) {
     return LocalPath;
 }
 
+
 /**
  * @description 行内容替换
  * @param {int} 行开头
@@ -55,12 +88,13 @@ function LineReplace(start, end, text) {
     });
 };
 
+
 /**
  * @description 获取当前行内容
  * @param {Function} fn 上传函数
  * @param {Object} ServerConfig
  */
-function MarkDownImgReplace(fn,ServerConfig) {
+function MarkDownLineImgReplace(fn, ServerConfig) {
     let activeEditor = hx.window.getActiveTextEditor();
     activeEditor.then(function(editor) {
         let fsName = editor.document.fileName;
@@ -72,10 +106,14 @@ function MarkDownImgReplace(fn,ServerConfig) {
 
         let linePromise = editor.document.lineFromPosition(editor.selection.active);
         linePromise.then((line) => {
-            let {start,end,text} = line;
+            let {
+                start,
+                end,
+                text
+            } = line;
             let LineText = text;
             end = start + LineText.length;
-            console.log("\nmarkdown", start,end,LineText);
+            console.log("\nmarkdown", start, end, LineText);
             // 正则匹配图片地址
             let patt = /!{1}\[(.*)\]\(.+\)/;
             if (!patt.test(LineText)) {
@@ -102,11 +140,9 @@ function MarkDownImgReplace(fn,ServerConfig) {
                 "ServerFileName": ServerName
             }
             async function handle() {
-                var server_url = await fn(ServerReq,ServerConfig);
-                console.log("云服务器返回的URL:", server_url);
+                var server_url = await fn(ServerReq, ServerConfig);
                 if (server_url && server_url != undefined) {
                     let waitWriteText = LineText.replace(rawImgUrl, server_url);
-                    console.log("待替换:",start,end,waitWriteText);
                     LineReplace(start, end, waitWriteText);
                 }
             }
@@ -116,6 +152,93 @@ function MarkDownImgReplace(fn,ServerConfig) {
 };
 
 
+/**
+ * @description 分析
+ */
+async function analysisLine(fsPath, fsName, outputChannel, rowNumber, LineText, fn, ServerConfig) {
+    rowNumber = Number(rowNumber) + 1;
+
+    let patt = /!{1}\[(.*)\]\(.+\)/;
+    if (!patt.test(LineText)) {
+        return LineText;
+    };
+    let MdImgUrlInfo = patt.exec(LineText)[0];
+    let ImgTitle = patt.exec(LineText)[1];
+    // 去掉 ![]()
+    rawImgUrl = MdImgUrlInfo.split('](')[1].replace(')', '');
+    // 获取本地图片地址
+    let imgLocalPath = getMarkDownImgLocalPath(rawImgUrl, fsPath, fsName);
+
+    let ServerName = rawImgUrl.replace(/(\.+\/)/g, '')
+    let ServerReq = {
+        "type": "markdown",
+        "fspath": imgLocalPath,
+        "ServerFileName": ServerName
+    }
+    if (fs.existsSync(imgLocalPath)) {
+        outputChannel.appendLine("解析成功, 开始上传: " + rawImgUrl)
+        var uploadResult = await fn(ServerReq, ServerConfig);
+        return '![' + ImgTitle + '](' + uploadResult + ')'
+        // return LineText.replace(rawImgUrl,uploadResult)
+    } else {
+        const error_msg = "解析失败, 第" + rowNumber + ' 行, ' + rawImgUrl + ' 有可能不是一张有效的本地图片';
+        outputChannel.appendLine(error_msg);
+        return LineText
+    }
+};
+
+
+/**
+ * @description markdown整体文件上传图片
+ */
+function MarkDownAll(fn, ServerConfig) {
+    // 显示控制台
+    let outputChannel = hx.window.createOutputChannel('MarkDown');
+    outputChannel.show();
+
+    // 从当前激活的编辑器中获取信息
+    let activeEditor = hx.window.getActiveTextEditor();
+    activeEditor.then(function(editor) {
+        let MarkDownName = editor.document.fileName;
+        let fsPath = editor.document.uri.fsPath;
+
+        try {
+            fs.accessSync(fsPath, fs.constants.R_OK | fs.constants.W_OK);
+            outputChannel.appendLine('开始解析MarkDown文件中的图片...')
+        } catch (err) {
+            outputChannel.appendLine('请检查文件权限')
+            return;
+        }
+
+        getMarkDownFileContent(fsPath, function(arr) {
+            let fileContent = arr.slice(arr)
+            let data = [];
+            fileContent.forEach((item,idx) => data.push({"LineNumber":idx,"LineText":item}))
+
+            // 先这样处理
+            const promises = data.map( item => {
+                let LineText = item.LineText
+                let LineNumber = item.LineNumber
+                return analysisLine(fsPath, MarkDownName, outputChannel, LineNumber, LineText, fn, ServerConfig)
+            });
+
+            Promise.all(promises).then(function(posts) {
+                try{
+                    outputChannel.appendLine('操作完成, 已替换上传成功的图片。');
+                    outputChannel.appendLine('备注: 若文档内容没有更新，请重新打开。');
+                    WriteMarkDown(fsPath,posts);
+                }catch(e){
+                    outputChannel.appendLine('操作失败, 原因: ' + e);
+                }
+            }).catch(function(reason) {
+                outputChannel.appendLine(reason);
+            });
+
+        });
+    });
+};
+
 module.exports = {
-    MarkDownImgReplace
+    MarkDownLineImgReplace,
+    MarkDownAll
 }
