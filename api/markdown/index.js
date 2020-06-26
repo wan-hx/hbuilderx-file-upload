@@ -178,9 +178,12 @@ async function analysisLine(fsPath, fsName, outputChannel, rowNumber, LineText, 
     if (fs.existsSync(imgLocalPath)) {
         outputChannel.appendLine("解析成功, 开始上传: " + rawImgUrl)
         var uploadResult = await fn(ServerReq, ServerConfig);
-        return { "text":'![' + ImgTitle + '](' + uploadResult + ')',"status": true }
+        if (uploadResult) {
+            return { "text":'![' + ImgTitle + '](' + uploadResult + ')',"status": true }
+        }
+        return {'text':LineText, 'status':false}
     } else {
-        const error_msg = "解析失败, 第" + rowNumber + ' 行, ' + rawImgUrl + ' 有可能不是一张有效的本地图片';
+        const error_msg = "解析失败, 第" + rowNumber + '行, ' + rawImgUrl + ' 有可能不是一张有效的本地图片';
         outputChannel.appendLine(error_msg);
         return {'text':LineText, 'status':false}
     }
@@ -237,7 +240,7 @@ function MarkDownAll(fn, ServerConfig) {
                         outputChannel.appendLine('更新成功.....');
                         outputChannel.appendLine('备注: 若文档内容没有更新，请重新打开。');
                     } else {
-                        outputChannel.appendLine('文档内，没有要上传的图片。');
+                        outputChannel.appendLine('文档未更新，没有要上传的图片, 或其它原因图片上传失败。');
                     }
                 }catch(e){
                     outputChannel.appendLine('操作失败, 原因: ' + e);
