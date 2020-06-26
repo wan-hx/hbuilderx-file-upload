@@ -160,7 +160,7 @@ async function analysisLine(fsPath, fsName, outputChannel, rowNumber, LineText, 
 
     let patt = /!{1}\[(.*)\]\(.+\)/;
     if (!patt.test(LineText)) {
-        return LineText;
+        return {'text':LineText, 'status':false}
     };
     let MdImgUrlInfo = patt.exec(LineText)[0];
     let ImgTitle = patt.exec(LineText)[1];
@@ -178,12 +178,11 @@ async function analysisLine(fsPath, fsName, outputChannel, rowNumber, LineText, 
     if (fs.existsSync(imgLocalPath)) {
         outputChannel.appendLine("解析成功, 开始上传: " + rawImgUrl)
         var uploadResult = await fn(ServerReq, ServerConfig);
-        return '![' + ImgTitle + '](' + uploadResult + ')'
-        // return LineText.replace(rawImgUrl,uploadResult)
+        return { "text":'![' + ImgTitle + '](' + uploadResult + ')',"status": true }
     } else {
         const error_msg = "解析失败, 第" + rowNumber + ' 行, ' + rawImgUrl + ' 有可能不是一张有效的本地图片';
         outputChannel.appendLine(error_msg);
-        return LineText
+        return {'text':LineText, 'status':false}
     }
 };
 
@@ -224,9 +223,22 @@ function MarkDownAll(fn, ServerConfig) {
 
             Promise.all(promises).then(function(posts) {
                 try{
-                    outputChannel.appendLine('操作完成, 已替换上传成功的图片。');
-                    outputChannel.appendLine('备注: 若文档内容没有更新，请重新打开。');
-                    WriteMarkDown(fsPath,posts);
+                    outputChannel.appendLine('分析完成。');
+                    let isWrite = false;
+                    let lastResult = posts.map( item => {
+                        if (item.status) {
+                            isWrite = true
+                        }
+                        return item.text
+                    })
+                    if (isWrite) {
+                        outputChannel.appendLine('开始更新.....');
+                        WriteMarkDown(fsPath,lastResult);
+                        outputChannel.appendLine('更新成功.....');
+                        outputChannel.appendLine('备注: 若文档内容没有更新，请重新打开。');
+                    } else {
+                        outputChannel.appendLine('文档内，没有要上传的图片。');
+                    }
                 }catch(e){
                     outputChannel.appendLine('操作失败, 原因: ' + e);
                 }
