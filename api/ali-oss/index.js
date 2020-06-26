@@ -57,11 +57,16 @@ async function AliUpload(info,ServerConfig) {
         if (ServerConfig.DomainName) {
             url = ServerConfig.DomainName + "/" + result.name;
         }
-        // 拷贝url、消息弹窗
+
+        // 拷贝url
+        if (ActionType != 'markdown') {
+            hx.env.clipboard.writeText(url);
+        }
+
+        // 消息弹窗
         if (ActionType == 'dir') {
             return {'status': true,'data':url}
         } else {
-            hx.env.clipboard.writeText(url);
             Msg.MessageNotification('uploadSuccess','阿里云','',ActionType);
             return url;
         }

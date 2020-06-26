@@ -63,10 +63,13 @@ function Upload({formUploader,token,extra,ServerFilePath,LocalFilePath,ActionTyp
                     url = ServerConfig.DomainName + "/" + ret.key;
                 }
 
+                // 拷贝url
+                if (ActionType != 'markdown') {
+                    hx.env.clipboard.writeText(url);
+                }
                 if (ActionType == 'dir') {
                     resolve({'status': true,'data':url});
                 } else {
-                    hx.env.clipboard.writeText(url);
                     Msg.MessageNotification('uploadSuccess', '七牛云', '', ActionType);
                     resolve(url);
                 }

@@ -46,7 +46,9 @@ function Upload({cos,Bucket,Region,LocalFilePath,ServerFilePath,ActionType,Serve
                         url = ServerConfig.DomainName + "/" + ServerFilePath;
                     }
                     // 拷贝url到剪切板
-                    hx.env.clipboard.writeText(url);
+                    if (ActionType != 'markdown') {
+                        hx.env.clipboard.writeText(url);
+                    }
                     Msg.MessageNotification('uploadSuccess', '腾讯云','',ActionType);
                     resolve(url);
                 }
