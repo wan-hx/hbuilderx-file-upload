@@ -1,8 +1,8 @@
 {
     "name": "hbuilderx-file-upload",
-    "description": "一键上传文件, 支持阿里云oss、腾讯云cos、七牛云等",
-    "displayName": "一键上传文件",
-    "version": "0.0.1",
+    "description": "一键上传, 支持上传文件到阿里云oss、腾讯云cos、七牛云等",
+    "displayName": "一键上传",
+    "version": "0.0.2",
     "publisher": "OneOne",
     "engines": {
         "HBuilderX": "^2.7.9"
